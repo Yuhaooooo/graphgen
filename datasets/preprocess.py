@@ -7,6 +7,7 @@ import torch
 from tqdm.auto import tqdm
 
 from dfscode.dfs_wrapper import get_min_dfscode
+from sys import exit
 
 MAX_WORKERS = 48
 
@@ -130,6 +131,9 @@ def graphs_to_min_dfscodes(graphs_path, min_dfscodes_path, temp_path):
     for filename in os.listdir(graphs_path):
         if filename.endswith(".dat"):
             graphs.append(filename)
+
+    print('temp_path: ', temp_path)
+    exit()
 
     with Pool(processes=MAX_WORKERS) as pool:
         for i, _ in tqdm(enumerate(pool.imap_unordered(

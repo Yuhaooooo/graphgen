@@ -6,7 +6,8 @@ import torch
 
 def mkdir(path):
     if os.path.isdir(path):
-        is_del = input('Delete ' + path + ' Y/N:')
+        # is_del = input('Delete ' + path + ' Y/N:')
+        is_del = 'y'
         if is_del.strip().lower() == 'y':
             shutil.rmtree(path)
         else:

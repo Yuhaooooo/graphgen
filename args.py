@@ -1,6 +1,8 @@
 from datetime import datetime
 import torch
 from utils import get_model_attribute
+import os
+from sys import exit
 
 
 class Args:
@@ -87,10 +89,10 @@ class Args:
         self.gradient_clipping = True
 
         # Output config
-        self.dir_input = ''
+        self.dir_input = os.environ.get('GraphgenSavePath')
         self.model_save_path = self.dir_input + 'model_save/'
         self.tensorboard_path = self.dir_input + 'tensorboard/'
-        self.dataset_path = self.dir_input + 'datasets/'
+        self.dataset_path = os.environ.get('DatasetPath')
         self.temp_path = self.dir_input + 'tmp/'
 
         # Model save and validate parameters
@@ -99,7 +101,7 @@ class Args:
         self.epochs_validate = 1
 
         # Time at which code is run
-        self.time = '{0:%Y-%m-%d %H:%M:%S}'.format(datetime.now())
+        self.time = '{0:%Y-%m-%d-%H-%M-%S}'.format(datetime.now())
 
         # Filenames to save intermediate and final outputs
         self.fname = self.note + '_' + self.graph_type
