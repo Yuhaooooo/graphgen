@@ -108,6 +108,12 @@ def get_random_bfs_seq(graph):
 
 
 def graph_to_min_dfscode(graph_file, graphs_path, min_dfscodes_path, temp_path):
+
+    # print('1. graph_file: ', graph_file)
+    # print('1. graphs_path: ', graphs_path)
+    # print('1. min_dfscodes_path: ', min_dfscodes_path)
+    # print('1. temp_path: ', temp_path)
+
     with open(graphs_path + graph_file, 'rb') as f:
         G = pickle.load(f)
         min_dfscode = get_min_dfscode(G, temp_path)
@@ -131,15 +137,20 @@ def graphs_to_min_dfscodes(graphs_path, min_dfscodes_path, temp_path):
     for filename in os.listdir(graphs_path):
         if filename.endswith(".dat"):
             graphs.append(filename)
+    
+    # print('graphs_path: ', graphs_path)
+    # print('min_dfscodes_path: ', min_dfscodes_path)
+    # print('temp_path: ', temp_path)
+    # exit()
 
-    print('temp_path: ', temp_path)
-    exit()
+    for graph in graphs:
+        graph_to_min_dfscode(graph, graphs_path, min_dfscodes_path, temp_path)
 
-    with Pool(processes=MAX_WORKERS) as pool:
-        for i, _ in tqdm(enumerate(pool.imap_unordered(
-            partial(graph_to_min_dfscode, graphs_path=graphs_path, min_dfscodes_path=min_dfscodes_path,
-                    temp_path=temp_path), graphs, chunksize=16), 1)):
-            pass
+    # with Pool(processes=MAX_WORKERS) as pool:
+    #     for i, _ in tqdm(enumerate(pool.imap_unordered(
+    #         partial(graph_to_min_dfscode, graphs_path=graphs_path, min_dfscodes_path=min_dfscodes_path,
+    #                 temp_path=temp_path), graphs, chunksize=16), 1)):
+    #         pass
             # if i % 50000 == 0:
             #     print('Processed', i, 'graphs')
 

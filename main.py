@@ -13,8 +13,8 @@ from graphgen.data import Graph_DFS_code_from_file
 from model import create_model
 from train import train
 
-
 if __name__ == '__main__':
+
     args = Args()
     args = args.update_args()
 

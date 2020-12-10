@@ -206,7 +206,7 @@ def orca(graph):
         f.write(str(u) + ' ' + str(v) + '\n')
     f.close()
 
-    output = sp.check_output(['bin/orca', 'node', '4', tmp_fname, 'std'])
+    output = sp.check_output(['orca', 'node', '4', tmp_fname, 'std'])
     output = output.decode('utf8').strip()
 
     idx = output.find(COUNT_START_STR) + len(COUNT_START_STR)
@@ -364,7 +364,7 @@ def novelity(graph_ref_path, graph_ref_indices, graph_pred_path, graph_pred_indi
 
     try:
         with open(res_path, 'w') as outf:
-            sp.call(['bin/subiso', test_path, pred_path, '0'],
+            sp.call(['subiso', test_path, pred_path, '0'],
                     stdout=outf, timeout=timeout)
     except sp.TimeoutExpired as e:
         outf.close()
@@ -383,7 +383,7 @@ def novelity(graph_ref_path, graph_ref_indices, graph_pred_path, graph_pred_indi
 
     try:
         with open(res_path, 'w') as outf:
-            sp.call(['bin/subiso', pred_path, test_path, '1'],
+            sp.call(['subiso', pred_path, test_path, '1'],
                     stdout=outf, timeout=timeout)
     except sp.TimeoutExpired as e:
         outf.close()
@@ -428,7 +428,7 @@ def uniqueness(graph_pred_path, graph_pred_indices, temp_path, timeout):
 
     try:
         with open(res_path, 'w') as outf:
-            sp.call(['bin/unique', pred_path], stdout=outf, timeout=timeout)
+            sp.call(['unique', pred_path], stdout=outf, timeout=timeout)
     except sp.TimeoutExpired as e:
         outf.close()
 

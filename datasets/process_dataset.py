@@ -357,6 +357,7 @@ def create_graphs(args):
         args.current_processed_dataset_path = min_dfscode_tensor_path
 
     if args.produce_graphs:
+        # change later (yuhao)
         mkdir(args.current_dataset_path)
 
         if args.graph_type in ['Lung', 'Breast', 'Leukemia', 'Yeast', 'All']:
@@ -389,7 +390,7 @@ def create_graphs(args):
     # Produce feature map
     feature_map = mapping(args.current_dataset_path,
                           args.current_dataset_path + 'map.dict')
-    print(feature_map)
+    print('feature_map: ', feature_map)
 
     if args.note == 'DFScodeRNN' and args.produce_min_dfscodes:
         # Empty the directory
