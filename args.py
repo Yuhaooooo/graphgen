@@ -28,16 +28,16 @@ class Args:
 
         # Check datasets/process_dataset for datasets
         # Select dataset to train the model
-        self.graph_type = 'Lung'
+        self.graph_type = 'cora'
         self.num_graphs = None  # Set it None to take complete dataset
 
         # Whether to produce networkx format graphs for real datasets
         # alr genetrated (Yuhao)
-        self.produce_graphs = False 
+        self.produce_graphs = True 
         # Whether to produce min dfscode and write to files
-        self.produce_min_dfscodes = False
+        self.produce_min_dfscodes = True
         # Whether to map min dfscodes to tensors and save to files
-        self.produce_min_dfscode_tensors = False
+        self.produce_min_dfscode_tensors = True
 
         # if none, then auto calculate
         self.max_prev_node = None  # max previous node that looks back for GraphRNN
@@ -90,10 +90,10 @@ class Args:
         self.gradient_clipping = True
 
         # Output config
-        self.dir_input = os.environ.get('GraphgenSavePath')
+        self.dir_input = os.environ.get('GraphgenResultsPath')
         self.model_save_path = self.dir_input + 'model_save/'
         self.tensorboard_path = self.dir_input + 'tensorboard/'
-        self.dataset_path = os.environ.get('DatasetPath')
+        self.dataset_path = self.dir_input + 'datasets/'
         self.temp_path = self.dir_input + 'tmp/'
 
         # Model save and validate parameters

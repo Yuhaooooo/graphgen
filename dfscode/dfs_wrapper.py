@@ -8,9 +8,6 @@ import networkx as nx
 def get_min_dfscode(G, temp_path=tempfile.gettempdir()):
     input_fd, input_path = tempfile.mkstemp(dir=temp_path)
 
-    # print('2. temp_path: ', temp_path)
-    # print('2. input_fd: ', input_fd)
-    # print('2. input_path: ', input_path)
 
     with open(input_path, 'w') as f:
         vcount = len(G.nodes)
@@ -31,10 +28,6 @@ def get_min_dfscode(G, temp_path=tempfile.gettempdir()):
     output_fd, output_path = tempfile.mkstemp(dir=temp_path)
 
     dfscode_bin_path = 'dfscode'
-
-    # print('2. input_path: ', input_path)
-    # print('2. dfscode_bin_path: ', dfscode_bin_path)
-    # print('2. output_path: ', output_path)
     
     with open(input_path, 'r') as f:
         subprocess.call([dfscode_bin_path, output_path, '2'], stdin=f)
