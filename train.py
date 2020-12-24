@@ -8,6 +8,7 @@ from utils import save_model, load_model, get_model_attribute
 from graphgen.train import evaluate_loss as eval_loss_dfscode_rnn
 from baselines.graph_rnn.train import evaluate_loss as eval_loss_graph_rnn
 from baselines.dgmg.train import evaluate_loss as eval_loss_dgmg
+import sys
 
 
 def evaluate_loss(args, model, data, feature_map):
@@ -29,8 +30,14 @@ def train_epoch(
         net.train()
 
     batch_count = len(dataloader_train)
+    print('batch_count: ', batch_count)
+    print('len of dataset: ', len(dataloader_train.dataset))
+
     total_loss = 0.0
     for batch_id, data in enumerate(dataloader_train):
+        print('batch_id: ', batch_id)
+        print('data: ', data)
+
         for _, net in model.items():
             net.zero_grad()
 

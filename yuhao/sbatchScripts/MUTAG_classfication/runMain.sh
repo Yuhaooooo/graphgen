@@ -19,5 +19,5 @@ export PATH=/home/FYP/heyu0012/projects/graphgen/bin:$PATH
 ROOT=/home/FYP/heyu0012/projects/graphgen
 cd $ROOT
 cp -r ${ROOT}/datasets $GraphgenResultsPath
-ls $GraphgenResultsPath/datasets
+# ls $GraphgenResultsPath/datasets
 python main.py

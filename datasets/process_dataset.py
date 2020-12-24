@@ -35,7 +35,7 @@ def check_graph_size(
 
     return True
 
-def unserialize_MUTAG_pickle(inputfile, output_path):
+def unserialize_MUTAG_pickle(inputfile, grgph_label_path, output_path):
 
     # same as the function unserialize_pickle from load_data.py from repo interpretable_graph_classifications
 
@@ -58,18 +58,22 @@ def unserialize_MUTAG_pickle(inputfile, output_path):
 
     # Extract graph labels
     graph_id = 0
+    graph_label_list = []
     for nxgraph in nxgraph_list:
 
         for edge_tuple in list(nxgraph.edges):
             nxgraph[edge_tuple[0]][edge_tuple[1]]['label']='0'
 
-        nxgraph.graph['id'] = graph_id
-        nxgraph.graph['label'] = str(nxgraph.graph['label'])
+        nxgraph.graph['id'] = str(graph_id)
+        graph_label_list.append(nxgraph.graph['label'])
 
         with open(os.path.join(output_path, 'graph{}.dat'.format(graph_id)), 'wb') as f:
             pickle.dump(nxgraph, f)
 
         graph_id += 1
+
+    with open(os.path.join(grgph_label_path, 'graph_label.dat'), 'wb') as f:
+        pickle.dump(graph_label_list, f)
         
     return graph_id
 
@@ -390,6 +394,7 @@ def create_graphs(args):
         print('Dataset - {} is not valid'.format(args.graph_type))
         exit()
 
+    args.grgph_label_path = base_path
     args.current_dataset_path = os.path.join(base_path, 'graphs/')
     args.min_dfscode_path = os.path.join(base_path, 'min_dfscodes/')
     min_dfscode_tensor_path = os.path.join(base_path, 'min_dfscode_tensors/')
@@ -425,7 +430,7 @@ def create_graphs(args):
 
         elif args.graph_type in ['MUTAG']:
             count = unserialize_MUTAG_pickle(
-                input_path, args.current_dataset_path)
+                input_path, args.grgph_label_path, args.current_dataset_path)
 
         print('Graphs produced', count)
     else:
@@ -437,8 +442,6 @@ def create_graphs(args):
     feature_map = mapping(args.current_dataset_path,
                           args.current_dataset_path + 'map.dict')
     print(feature_map)
-
-    sys.exit()
 
     if args.note == 'DFScodeRNN' and args.produce_min_dfscodes:
         # Empty the directory
