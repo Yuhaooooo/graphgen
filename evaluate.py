@@ -47,7 +47,7 @@ class ArgsEvaluate():
         self.train_args = get_model_attribute(
             'saved_args', self.model_path, self.device)
 
-        self.graphs_save_path = os.environ.get('GraphgenResultsPath') + 'datasets/Lung/graphs/'
+        self.graphs_save_path = os.environ.get('GraphgenResultsPath') + '????'
         self.current_graphs_save_path = self.graphs_save_path + self.train_args.fname + '_' + \
             self.train_args.time + '/' + str(self.num_epochs) + '/'
 

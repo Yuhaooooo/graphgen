@@ -9,6 +9,7 @@ import bisect
 import networkx as nx
 import numpy as np
 from tqdm.auto import tqdm
+import sys
 
 from utils import mkdir
 from datasets.preprocess import (
@@ -33,6 +34,44 @@ def check_graph_size(
         return False
 
     return True
+
+def unserialize_MUTAG_pickle(inputfile, output_path):
+
+    # same as the function unserialize_pickle from load_data.py from repo interpretable_graph_classifications
+
+    # Unserialize the pickled file
+    with open(inputfile, 'rb') as pickled_file:
+        nxgraph_list = pickle.load(pickled_file)
+        pickled_file.close()
+
+    # Relabel nodes
+    for i in range(len(nxgraph_list)):
+        relabel_mapping = {}
+        j = 0
+        for n in nxgraph_list[i].nodes:
+            relabel_mapping[n] = j
+            j += 1
+
+        nxgraph = nx.relabel_nodes(nxgraph_list[i], relabel_mapping, copy=True)
+
+        nxgraph_list[i] = nxgraph
+
+    # Extract graph labels
+    graph_id = 0
+    for nxgraph in nxgraph_list:
+
+        for edge_tuple in list(nxgraph.edges):
+            nxgraph[edge_tuple[0]][edge_tuple[1]]['label']='0'
+
+        nxgraph.graph['id'] = graph_id
+        nxgraph.graph['label'] = str(nxgraph.graph['label'])
+
+        with open(os.path.join(output_path, 'graph{}.dat'.format(graph_id)), 'wb') as f:
+            pickle.dump(nxgraph, f)
+
+        graph_id += 1
+        
+    return graph_id
 
 
 def produce_graphs_from_raw_format(
@@ -343,6 +382,10 @@ def create_graphs(args):
         min_num_nodes, max_num_nodes = None, None
         min_num_edges, max_num_edges = 20, None
 
+    elif 'MUTAG' in args.graph_type:
+        base_path = os.path.join(args.dataset_path, 'MUTAG/')
+        input_path = base_path + 'MUTAG.p'
+
     else:
         print('Dataset - {} is not valid'.format(args.graph_type))
         exit()
@@ -357,7 +400,6 @@ def create_graphs(args):
         args.current_processed_dataset_path = min_dfscode_tensor_path
 
     if args.produce_graphs:
-        # change later (yuhao)
         mkdir(args.current_dataset_path)
 
         if args.graph_type in ['Lung', 'Breast', 'Leukemia', 'Yeast', 'All']:
@@ -381,6 +423,10 @@ def create_graphs(args):
                 max_num_nodes=max_num_nodes, min_num_edges=min_num_edges,
                 max_num_edges=max_num_edges)
 
+        elif args.graph_type in ['MUTAG']:
+            count = unserialize_MUTAG_pickle(
+                input_path, args.current_dataset_path)
+
         print('Graphs produced', count)
     else:
         count = len([name for name in os.listdir(
@@ -390,7 +436,9 @@ def create_graphs(args):
     # Produce feature map
     feature_map = mapping(args.current_dataset_path,
                           args.current_dataset_path + 'map.dict')
-    print('feature_map: ', feature_map)
+    print(feature_map)
+
+    sys.exit()
 
     if args.note == 'DFScodeRNN' and args.produce_min_dfscodes:
         # Empty the directory

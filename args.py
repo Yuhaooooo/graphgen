@@ -28,7 +28,7 @@ class Args:
 
         # Check datasets/process_dataset for datasets
         # Select dataset to train the model
-        self.graph_type = 'cora'
+        self.graph_type = 'MUTAG'
         self.num_graphs = None  # Set it None to take complete dataset
 
         # Whether to produce networkx format graphs for real datasets
