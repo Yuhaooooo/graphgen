@@ -403,6 +403,8 @@ def create_graphs(args):
         args.current_processed_dataset_path = args.current_dataset_path
     elif args.note == 'DFScodeRNN':
         args.current_processed_dataset_path = min_dfscode_tensor_path
+    elif args.note == 'DFScodeRNN_cls':
+        args.current_processed_dataset_path = min_dfscode_tensor_path
 
     if args.produce_graphs:
         mkdir(args.current_dataset_path)
@@ -443,7 +445,7 @@ def create_graphs(args):
                           args.current_dataset_path + 'map.dict')
     print(feature_map)
 
-    if args.note == 'DFScodeRNN' and args.produce_min_dfscodes:
+    if (args.note in ['DFScodeRNN', 'DFScodeRNN_cls']) and args.produce_min_dfscodes:
         # Empty the directory
         mkdir(args.min_dfscode_path)
 
@@ -454,7 +456,7 @@ def create_graphs(args):
         end = time.time()
         print('Time taken to make dfscodes = {:.3f}s'.format(end - start))
 
-    if args.note == 'DFScodeRNN' and args.produce_min_dfscode_tensors:
+    if (args.note in ['DFScodeRNN', 'DFScodeRNN_cls']) and args.produce_min_dfscode_tensors:
         # Empty the directory
         mkdir(min_dfscode_tensor_path)
 

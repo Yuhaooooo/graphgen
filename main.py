@@ -9,12 +9,16 @@ from datasets.process_dataset import create_graphs
 from datasets.preprocess import calc_max_prev_node, dfscodes_weights
 from baselines.dgmg.data import DGMG_Dataset_from_file
 from baselines.graph_rnn.data import Graph_Adj_Matrix_from_file
-from graphgen.data import Graph_DFS_code_from_file
+# from graphgen.data import Graph_DFS_code_from_file
+from graphgen_cls.data import Graph_DFS_code_from_file
 from model import create_model
 from train import train
 from sklearn.model_selection import StratifiedKFold
 import sys
 import os
+
+import torch
+torch.set_printoptions(threshold=10_000)
 
 if __name__ == '__main__':
 
@@ -48,6 +52,8 @@ if __name__ == '__main__':
         graphs_train.append([(graph_list[i], graph_label_list[i]) for i in train_index])
         graphs_test.append([(graph_list[i], graph_label_list[i]) for i in test_index])
 
+    graphs_validate = None
+
     # print('graphs_train: {}'.format(graphs_train))
     print('graphs_test: {}'.format(graphs_test))
 
@@ -63,6 +69,10 @@ if __name__ == '__main__':
     # Loading the feature map
     with open(args.current_dataset_path + 'map.dict', 'rb') as f:
         feature_map = pickle.load(f)
+
+    if args.note == 'DFScodeRNN_cls':
+        feature_map['label_size'] = len(set(graph_label_list))
+        print('Number of labels: {}'.format(feature_map['label_size']))
 
     print('Max number of nodes: {}'.format(feature_map['max_nodes']))
     print('Max number of edges: {}'.format(feature_map['max_edges']))
@@ -104,9 +114,12 @@ if __name__ == '__main__':
             args, graphs_validate, feature_map, random_bfs)
     elif args.note == 'DFScodeRNN':
         dataset_train = Graph_DFS_code_from_file(
+            args, graphs_train, feature_map)
+        dataset_validate = Graph_DFS_code_from_file(
+            args, graphs_validate, feature_map)
+    elif args.note == 'DFScodeRNN_cls':
+        dataset_train = Graph_DFS_code_from_file(
             args, graphs_train[0], feature_map)
-        # dataset_validate = Graph_DFS_code_from_file(
-        #     args, graphs_validate, feature_map)
     elif args.note == 'DGMG':
         dataset_train = DGMG_Dataset_from_file(args, graphs_train, feature_map)
         dataset_validate = DGMG_Dataset_from_file(
@@ -119,13 +132,17 @@ if __name__ == '__main__':
         dataloader_validate = DataLoader(
             dataset_validate, batch_size=args.batch_size, shuffle=False,
             num_workers=args.num_workers, collate_fn=dataset_validate.collate_batch)
+    elif args.note == 'DFScodeRNN_cls':
+        dataloader_train = DataLoader(
+            dataset_train, batch_size=args.batch_size, shuffle=True, drop_last=True,
+            num_workers=args.num_workers)
     else:
         dataloader_train = DataLoader(
             dataset_train, batch_size=args.batch_size, shuffle=True, drop_last=True,
             num_workers=args.num_workers)
-        # dataloader_validate = DataLoader(
-        #     dataset_validate, batch_size=args.batch_size, shuffle=False,
-        #     num_workers=args.num_workers)
+        dataloader_validate = DataLoader(
+            dataset_validate, batch_size=args.batch_size, shuffle=False,
+            num_workers=args.num_workers)
 
     model = create_model(args, feature_map)
 

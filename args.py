@@ -24,7 +24,7 @@ class Args:
         self.log_tensorboard = True
 
         # Algorithm Version - # Algorithm Version - GraphRNN  | DFScodeRNN (GraphGen) | DGMG (Deep GMG)
-        self.note = 'DFScodeRNN'
+        self.note = 'DFScodeRNN_cls'
 
         # Check datasets/process_dataset for datasets
         # Select dataset to train the model
@@ -53,8 +53,9 @@ class Args:
 
         # Specific to DFScodeRNN
         # Model parameters
-        self.hidden_size_dfscode_rnn = 256  # hidden size for dfscode RNN
-        self.embedding_size_dfscode_rnn = 92  # input size for dfscode RNN
+        # self.hidden_size_dfscode_rnn = 256  # hidden size for dfscode RNN
+        self.hidden_size_dfscode_rnn = 32
+        self.embedding_size_dfscode_rnn = 64  # input size for dfscode RNN
         # the size for vertex output embedding
         self.embedding_size_timestamp_output = 512
         self.embedding_size_vertex_output = 512  # the size for vertex output embedding
@@ -69,7 +70,7 @@ class Args:
         # Specific to GraphRNN | DFScodeRNN
         self.num_layers = 4  # Layers of rnn
 
-        self.batch_size = 32  # normal: 32, and the rest should be changed accordingly
+        self.batch_size = 16  # normal: 32, and the rest should be changed accordingly
 
         # Specific to DGMG
         # Model parameters

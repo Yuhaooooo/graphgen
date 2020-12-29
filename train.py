@@ -8,6 +8,8 @@ from utils import save_model, load_model, get_model_attribute
 from graphgen.train import evaluate_loss as eval_loss_dfscode_rnn
 from baselines.graph_rnn.train import evaluate_loss as eval_loss_graph_rnn
 from baselines.dgmg.train import evaluate_loss as eval_loss_dgmg
+from graphgen_cls.train import evaluate_loss as eval_loss_dfscode_rnn_cls
+
 import sys
 
 
@@ -16,6 +18,8 @@ def evaluate_loss(args, model, data, feature_map):
         loss = eval_loss_graph_rnn(args, model, data, feature_map)
     elif args.note == 'DFScodeRNN':
         loss = eval_loss_dfscode_rnn(args, model, data, feature_map)
+    elif args.note == 'DFScodeRNN_cls':
+        loss = eval_loss_dfscode_rnn_cls(args, model, data, feature_map)
     elif args.note == 'DGMG':
         loss = eval_loss_dgmg(model, data)
 
@@ -29,14 +33,12 @@ def train_epoch(
     for _, net in model.items():
         net.train()
 
-    batch_count = len(dataloader_train)
-    print('batch_count: ', batch_count)
-    print('len of dataset: ', len(dataloader_train.dataset))
+    batch_count = len(dataloader_train) # number of batches
+    # print('batch_count: ', batch_count)
+    # print('len of train dataset: ', len(dataloader_train.dataset))
 
     total_loss = 0.0
     for batch_id, data in enumerate(dataloader_train):
-        print('batch_id: ', batch_id)
-        print('data: ', data)
 
         for _, net in model.items():
             net.zero_grad()
@@ -118,8 +120,7 @@ def train(args, dataloader_train, model, feature_map, dataloader_validate=None):
         if args.log_tensorboard:
             writer.add_scalar('{} {} Loss/train'.format(
                 args.note, args.graph_type), loss, epoch)
-        else:
-            print('Epoch: {}/{}, train loss: {:.6f}'.format(epoch, args.epochs, loss))
+        print('Epoch: {}/{}, train loss: {:.6f}'.format(epoch, args.epochs, loss))
 
         # save model checkpoint
         if args.save_model and epoch != 0 and epoch % args.epochs_save == 0:
