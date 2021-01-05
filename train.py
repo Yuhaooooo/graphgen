@@ -9,6 +9,7 @@ from graphgen.train import evaluate_loss as eval_loss_dfscode_rnn
 from baselines.graph_rnn.train import evaluate_loss as eval_loss_graph_rnn
 from baselines.dgmg.train import evaluate_loss as eval_loss_dgmg
 from graphgen_cls.train import evaluate_loss as eval_loss_dfscode_rnn_cls
+from sklearn.metrics import accuracy_score
 
 import sys
 
@@ -34,16 +35,25 @@ def train_epoch(
         net.train()
 
     batch_count = len(dataloader_train) # number of batches
+    # print('number of batches: ', batch_count)
     # print('batch_count: ', batch_count)
     # print('len of train dataset: ', len(dataloader_train.dataset))
+
+    y_preds=[]
+    y_trues=[]
 
     total_loss = 0.0
     for batch_id, data in enumerate(dataloader_train):
 
+        # print('train.py: batch_id: ', batch_id)
+        # print('train.py: data: ', data)
+
         for _, net in model.items():
             net.zero_grad()
 
-        loss = evaluate_loss(args, model, data, feature_map)
+        loss, y_pred, y_true = evaluate_loss(args, model, data, feature_map)
+        y_preds.extend(y_pred)
+        y_trues.extend(y_true)
 
         loss.backward()
         total_loss += loss.data.item()
@@ -64,7 +74,11 @@ def train_epoch(
             summary_writer.add_scalar('{} {} Loss/train batch'.format(
                 args.note, args.graph_type), loss, batch_id + batch_count * epoch)
 
-    return total_loss / batch_count
+    y_preds = [1. if n >= 0.5 else 0. for n in y_preds]
+    # print('y_trues: ', y_trues)
+    # print('y_preds: ', y_preds)
+
+    return total_loss / batch_count, accuracy_score(y_trues, y_preds)
 
 
 def test_data(args, model, dataloader, feature_map):
@@ -112,15 +126,15 @@ def train(args, dataloader_train, model, feature_map, dataloader_validate=None):
         writer = None
 
     while epoch < args.epochs:
-        loss = train_epoch(
+        loss, acc = train_epoch(
             epoch, args, model, dataloader_train, optimizer, scheduler, feature_map, writer)
         epoch += 1
+        print('Epoch: {}/{}, train loss: {:.3f}, accuray: {:.3f}'.format(epoch, args.epochs, loss, acc))
 
         # logging
         if args.log_tensorboard:
             writer.add_scalar('{} {} Loss/train'.format(
                 args.note, args.graph_type), loss, epoch)
-        print('Epoch: {}/{}, train loss: {:.6f}'.format(epoch, args.epochs, loss))
 
         # save model checkpoint
         if args.save_model and epoch != 0 and epoch % args.epochs_save == 0:

@@ -33,8 +33,12 @@ class Graph_DFS_code_from_file(Dataset):
     def __getitem__(self, idx):
         graph_id = self.graph_list[idx][0]
         graph_label = self.graph_list[idx][1]
+
         with open(self.dataset_path + 'graph' + str(graph_id) + '.dat', 'rb') as f:
             dfscode_tensors = pickle.load(f)
+
+        # print('data.py: graph_id: ', graph_id)
+        # print('data.py: dfscode_tensors: ', dfscode_tensors)
 
         return dfscode_tensors, graph_label
 

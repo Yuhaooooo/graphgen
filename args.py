@@ -44,22 +44,22 @@ class Args:
 
         # Specific to GraphRNN
         # Model parameters
-        self.hidden_size_node_level_rnn = 128  # hidden size for node level RNN
-        self.embedding_size_node_level_rnn = 64  # the size for node level RNN input
-        self.embedding_size_node_output = 64  # the size of node output embedding
-        self.hidden_size_edge_level_rnn = 16  # hidden size for edge level RNN
-        self.embedding_size_edge_level_rnn = 8  # the size for edge level RNN input
-        self.embedding_size_edge_output = 8  # the size of edge output embedding
+        # self.hidden_size_node_level_rnn = 128  # hidden size for node level RNN
+        # self.embedding_size_node_level_rnn = 64  # the size for node level RNN input
+        # self.embedding_size_node_output = 64  # the size of node output embedding
+        # self.hidden_size_edge_level_rnn = 16  # hidden size for edge level RNN
+        # self.embedding_size_edge_level_rnn = 8  # the size for edge level RNN input
+        # self.embedding_size_edge_output = 8  # the size of edge output embedding
 
         # Specific to DFScodeRNN
         # Model parameters
         # self.hidden_size_dfscode_rnn = 256  # hidden size for dfscode RNN
-        self.hidden_size_dfscode_rnn = 32
-        self.embedding_size_dfscode_rnn = 64  # input size for dfscode RNN
+        self.hidden_size_dfscode_rnn = 4
+        self.embedding_size_dfscode_rnn = 8  # input size for dfscode RNN
         # the size for vertex output embedding
-        self.embedding_size_timestamp_output = 512
-        self.embedding_size_vertex_output = 512  # the size for vertex output embedding
-        self.embedding_size_edge_output = 512  # the size for edge output embedding
+        # self.embedding_size_timestamp_output = 512
+        # self.embedding_size_vertex_output = 512  # the size for vertex output embedding
+        # self.embedding_size_edge_output = 512  # the size for edge output embedding
         self.dfscode_rnn_dropout = 0.2  # Dropout layer in between RNN layers
         self.loss_type = 'BCE'
         self.weights = False
@@ -68,15 +68,15 @@ class Args:
         self.rnn_type = 'LSTM'  # LSTM | GRU
 
         # Specific to GraphRNN | DFScodeRNN
-        self.num_layers = 4  # Layers of rnn
+        self.num_layers = 1  # Layers of rnn
 
-        self.batch_size = 16  # normal: 32, and the rest should be changed accordingly
+        self.batch_size = 32  # normal: 32, and the rest should be changed accordingly
 
         # Specific to DGMG
         # Model parameters
-        self.feat_size = 128
-        self.hops = 2
-        self.dropout = 0.2
+        # self.feat_size = 128
+        # self.hops = 2
+        # self.dropout = 0.2
 
         # training config
         self.num_workers = 8  # num workers to load data, default 4

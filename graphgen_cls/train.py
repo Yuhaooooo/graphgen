@@ -12,8 +12,8 @@ from dfscode.dfs_wrapper import graph_from_dfscode
 def evaluate_loss(args, model, data, feature_map):
 
     x = data[0]
-    y = data[1]
-    y = y.to(args.device).float()
+    y_true = data[1]
+    y_true = y_true.to(args.device).float()
 
 
     x_len_unsorted = x['len'].to(args.device)
@@ -47,6 +47,7 @@ def evaluate_loss(args, model, data, feature_map):
     x_e = F.one_hot(e, num_classes=len_edge_vec + 1)[:, :, :-1]
 
     x_target = torch.cat((x_t1, x_t2, x_v1, x_e, x_v2), dim=2).float()
+    # print('x_target: ', x_target)
 
     # initialize dfs_code_rnn hidden according to batch size
     model['dfs_code_rnn'].hidden = model['dfs_code_rnn'].init_hidden(
@@ -61,8 +62,8 @@ def evaluate_loss(args, model, data, feature_map):
     # print('dfscode_rnn_output: ', dfscode_rnn_output)
 
     if args.loss_type == 'BCE':
-        x_pred = model['output_layer'](dfscode_rnn_output)
-        x_pred = torch.squeeze(x_pred)
+        y_pred = model['output_layer'](dfscode_rnn_output)
+        y_pred = torch.squeeze(y_pred)
 
         # Cleaning the padding i.e setting it to zero
         # x_pred = pack_padded_sequence(x_pred, x_len + 1, batch_first=True)
@@ -71,10 +72,10 @@ def evaluate_loss(args, model, data, feature_map):
         # yuhao default is false
         weight = None
 
-        # print('x_pred: ', x_pred)
-        # print('y: ', y)
+        # print('y_pred: ', y_pred)
+        # print('y_true: ', y_true)
 
-        loss_sum = F.binary_cross_entropy(x_pred, y)
+        loss_sum = F.binary_cross_entropy(y_pred, y_true)
         loss = torch.mean(torch.sum(loss_sum) / (x_len.float() + 1))
 
     # elif args.loss_type == 'NLL':
@@ -97,7 +98,7 @@ def evaluate_loss(args, model, data, feature_map):
 
     #     loss = loss_t1 + loss_t2 + loss_v1 + loss_e + loss_v2
 
-    return loss
+    return loss, y_pred.cpu().detach().numpy(), y_true.cpu().detach().numpy()
 
 
 # def predict_graphs(eval_args):

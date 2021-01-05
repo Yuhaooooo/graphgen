@@ -24,10 +24,10 @@ class MLP_Binary(nn.Module):
     A deterministic linear output layer
     """
 
-    def __init__(self, input_size, embedding_size, output_size, dropout=0):
+    def __init__(self, input_size, output_size, dropout=0):
         super(MLP_Binary, self).__init__()
         self.mlp = nn.Sequential(
-            MLP_Plain(input_size, embedding_size, output_size, dropout),
+            MLP_onelayer(input_size, output_size, dropout),
             nn.Sigmoid()
         )
 
@@ -50,6 +50,24 @@ class MLP_Log_Softmax(nn.Module):
     def forward(self, input):
         return self.mlp(input)
 
+class MLP_onelayer(nn.Module):
+    """
+    A deterministic linear output layer
+    """
+
+    def __init__(self, input_size, output_size, dropout=0):
+        super(MLP_onelayer, self).__init__()
+        self.mlp = nn.Sequential(
+            nn.Linear(input_size, output_size),
+        )
+
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                m.weight.data = init.xavier_uniform_(
+                    m.weight.data, gain=nn.init.calculate_gain('relu'))
+
+    def forward(self, input):
+        return self.mlp(input)
 
 class MLP_Plain(nn.Module):
     """
@@ -158,19 +176,24 @@ class RNN(nn.Module):
         #     input = pack_padded_sequence(
         #         input, input_len, batch_first=True, enforce_sorted=False)
 
-        output, self.hidden = self.rnn(input, self.hidden)
+        # print('model.py: input: ', input)
+        # print('model.py: input.size(): ', input.size())
 
-        # print('output.size(): ', output.size(), '\n')
+        output, self.hidden = self.rnn(input, self.hidden)
+        
+        # print('model.py: output.size(): ', output.size())
 
         output = output[:, -1, :]
+        # print('model.py: output: ', output)
+        # print('model.py: output.size(): ', output.size())
         # print('output.size(): ', output.size(), '\n')
         # output of shape (seq_len, batch, num_directions * hidden_size): tensor containing the output features (h_t) from the last layer of the LSTM, for each t. If a torch.nn.utils.rnn.PackedSequence has been given as the input, the output will also be a packed sequence.
 
         # if input_len is not None:
         #     output, _ = pad_packed_sequence(output, batch_first=True)
 
-        if self.output_size is not None:
-            output = self.output(output)
+        # if self.output_size is not None:
+        #     output = self.output(output)
 
         return output
 
@@ -212,7 +235,7 @@ def create_model(args, feature_map):
 
     output_size = 1 if feature_map['label_size']==2 else feature_map['label_size']
     output_layer = MLP_layer(
-            input_size=args.hidden_size_dfscode_rnn, embedding_size=args.hidden_size_dfscode_rnn//2,
+            input_size=args.hidden_size_dfscode_rnn, 
             output_size=output_size, dropout=args.dfscode_rnn_dropout).to(device=args.device)
 
     model = {
